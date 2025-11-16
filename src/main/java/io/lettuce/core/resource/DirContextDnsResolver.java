@@ -210,22 +210,23 @@ public class DirContextDnsResolver implements DnsResolver, Closeable {
         Attribute attr = attrs.get("CNAME");
 
         if (attr != null && attr.size() > 0) {
-            NamingEnumeration e = attr.getAll();
+            try (NamingEnumeration<?> e = attr.getAll()) {
 
-            while (e.hasMore()) {
-                String h = (String) e.next();
+                while (e.hasMore()) {
+                    String h = (String) e.next();
 
-                if (h.endsWith(".")) {
-                    h = h.substring(0, h.lastIndexOf('.'));
-                }
-                try {
-                    InetAddress[] resolved = resolve(h);
-                    for (InetAddress inetAddress : resolved) {
-                        inetAddresses.add(InetAddress.getByAddress(hostname, inetAddress.getAddress()));
+                    if (h.endsWith(".")) {
+                        h = h.substring(0, h.lastIndexOf('.'));
                     }
+                    try {
+                        InetAddress[] resolved = resolve(h);
+                        for (InetAddress inetAddress : resolved) {
+                            inetAddresses.add(InetAddress.getByAddress(hostname, inetAddress.getAddress()));
+                        }
 
-                } catch (UnknownHostException e1) {
-                    // ignore
+                    } catch (UnknownHostException e1) {
+                        // ignore
+                    }
                 }
             }
         }
@@ -251,11 +252,12 @@ public class DirContextDnsResolver implements DnsResolver, Closeable {
         Attribute attr = attrs.get(attrName);
 
         if (attr != null && attr.size() > 0) {
-            NamingEnumeration e = attr.getAll();
+            try (NamingEnumeration<?> e = attr.getAll()) {
 
-            while (e.hasMore()) {
-                InetAddress inetAddress = InetAddress.getByName("" + e.next());
-                inetAddresses.add(InetAddress.getByAddress(hostname, inetAddress.getAddress()));
+                while (e.hasMore()) {
+                    InetAddress inetAddress = InetAddress.getByName("" + e.next());
+                    inetAddresses.add(InetAddress.getByAddress(hostname, inetAddress.getAddress()));
+                }
             }
         }
 

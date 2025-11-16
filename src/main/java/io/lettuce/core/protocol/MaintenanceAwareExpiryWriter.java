@@ -126,6 +126,9 @@ public class MaintenanceAwareExpiryWriter extends CommandExpiryWriter implements
 
         if (command instanceof CompleteableCommand) {
             ((CompleteableCommand<?>) command).onComplete((o, o2) -> commandTimeout.cancel());
+        } else {
+            // For commands that are not CompleteableCommand, still cancel timeout when done
+            command.whenComplete((r, t) -> commandTimeout.cancel());
         }
 
     }
@@ -142,6 +145,9 @@ public class MaintenanceAwareExpiryWriter extends CommandExpiryWriter implements
 
         if (command instanceof CompleteableCommand) {
             ((CompleteableCommand<?>) command).onComplete((o, o2) -> commandTimeout.cancel());
+        } else {
+            // For commands that are not CompleteableCommand, still cancel timeout when done
+            command.whenComplete((r, t) -> commandTimeout.cancel());
         }
     }
 
